@@ -51,13 +51,14 @@ pipeline {
 
                         stage('Build and Push to PREPROD ECR') {
                             steps {
-							 withCredentials([string(credentialsId: NODE_SECRET, variable: 'SECRET')]) {
-                                load "./jenkins/PREPROD/env.jenkins"
-                                sh '/usr/local/bin/aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com'
-                                sh 'docker build --build-arg PORT=${PORT} --build-arg SECRET=${SECRET} -t ${image} .'
-                                sh 'docker tag ${image}:latest ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com/${image}:latest'
-                                sh 'docker push ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com/${image}:latest'
-								}
+				withCredentials([string(credentialsId: 'NODE_SECRET', variable: 'SECRET')]) 
+				{
+                                	load "./jenkins/PREPROD/env.jenkins"
+                                	sh '/usr/local/bin/aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com'
+                                	sh 'docker build --build-arg PORT=${PORT} --build-arg SECRET=${SECRET} -t ${image} .'
+                                	sh 'docker tag ${image}:latest ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com/${image}:latest'
+                                	sh 'docker push ${AWS_ID}.dkr.ecr.ap-south-1.amazonaws.com/${image}:latest'
+			        }
                             }
                         }
 
